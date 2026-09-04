@@ -1,5 +1,5 @@
 # Builds LAKHSONN OS desktop installers in the cloud and publishes them as a GitHub Release.
-# Trigger: push a version tag, e.g.  git tag v1.0.0 && git push origin v1.0.0
+# Trigger: push a version tag, e.g.  git tag v1.0.1 && git push origin v1.0.1
 # Result:  https://github.com/shreeman2022/lakhsonn-desktop/releases/latest/download/LAKHSONN-OS.dmg
 #          https://github.com/shreeman2022/lakhsonn-desktop/releases/latest/download/LAKHSONN-OS-Setup.exe
 name: Build & Release Desktop App
@@ -15,27 +15,39 @@ permissions:
 jobs:
   build:
     strategy:
+      fail-fast: false          # Windows builds even if Mac fails, and vice versa
       matrix:
         include:
           - os: macos-latest
-            script: dist:mac
+            target: mac
           - os: windows-latest
-            script: dist:win
+            target: win
     runs-on: ${{ matrix.os }}
+    env:
+      # Empty until you add the Apple certificate secret; that's what switches Mac to signed builds.
+      HAS_MAC_CERT: ${{ secrets.MAC_CERT_P12_BASE64 }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npm ci || npm install
-      - name: Build & publish installer
-        run: npx electron-builder --${{ matrix.os == 'macos-latest' && 'mac' || 'win' }} --publish always
+
+      # ── Unsigned build: Windows always; Mac until the Apple certificate is added ──
+      - name: Build & publish installer (unsigned)
+        if: matrix.target == 'win' || env.HAS_MAC_CERT == ''
+        run: npx electron-builder --${{ matrix.target }} --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # ---- Mac code-signing + notarization (optional; add these secrets when you have an Apple Developer account) ----
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      # ── Signed + notarized Mac build: runs automatically once the secrets exist ──
+      - name: Build & publish installer (signed)
+        if: matrix.target == 'mac' && env.HAS_MAC_CERT != ''
+        run: npx electron-builder --mac --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.MAC_CERT_P12_BASE64 }}
           CSC_KEY_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          # Until the Mac cert exists, skip signing so the build still succeeds:
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.MAC_CERT_P12_BASE64 != '' }}
