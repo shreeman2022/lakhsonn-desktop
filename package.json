@@ -1,0 +1,62 @@
+{
+  "name": "lakhsonn-os",
+  "productName": "LAKHSONN OS",
+  "version": "1.0.0",
+  "description": "LAKHSONN OS — Unified Operations System (Movezle Technologies Pvt Ltd)",
+  "main": "main.js",
+  "author": "Movezle Technologies Pvt Ltd <support@movezle.com>",
+  "homepage": "https://movezle.com",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win",
+    "release": "electron-builder --publish always"
+  },
+  "build": {
+    "appId": "com.movezle.lakhsonn",
+    "productName": "LAKHSONN OS",
+    "copyright": "© Movezle Technologies Pvt Ltd",
+    "directories": { "output": "release", "buildResources": "build" },
+    "files": ["main.js", "package.json"],
+    "publish": [
+      { "provider": "github", "owner": "shreeman2022", "repo": "lakhsonn-desktop", "releaseType": "release" }
+    ],
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["universal"] }],
+      "category": "public.app-category.business",
+      "icon": "build/icon.png",
+      "artifactName": "LAKHSONN-OS.${ext}",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "dmg": {
+      "title": "Install LAKHSONN OS",
+      "contents": [
+        { "x": 140, "y": 200 },
+        { "x": 400, "y": 200, "type": "link", "path": "/Applications" }
+      ]
+    },
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "build/icon.png",
+      "artifactName": "LAKHSONN-OS-Setup.${ext}",
+      "publisherName": "Movezle Technologies Pvt Ltd"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "LAKHSONN OS"
+    }
+  },
+  "devDependencies": {
+    "electron": "^31.7.6",
+    "electron-builder": "^24.13.3"
+  }
+}

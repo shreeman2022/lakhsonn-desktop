@@ -1,0 +1,41 @@
+# Builds LAKHSONN OS desktop installers in the cloud and publishes them as a GitHub Release.
+# Trigger: push a version tag, e.g.  git tag v1.0.0 && git push origin v1.0.0
+# Result:  https://github.com/shreeman2022/lakhsonn-desktop/releases/latest/download/LAKHSONN-OS.dmg
+#          https://github.com/shreeman2022/lakhsonn-desktop/releases/latest/download/LAKHSONN-OS-Setup.exe
+name: Build & Release Desktop App
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            script: dist:mac
+          - os: windows-latest
+            script: dist:win
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci || npm install
+      - name: Build & publish installer
+        run: npx electron-builder --${{ matrix.os == 'macos-latest' && 'mac' || 'win' }} --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # ---- Mac code-signing + notarization (optional; add these secrets when you have an Apple Developer account) ----
+          CSC_LINK: ${{ secrets.MAC_CERT_P12_BASE64 }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Until the Mac cert exists, skip signing so the build still succeeds:
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.MAC_CERT_P12_BASE64 != '' }}
