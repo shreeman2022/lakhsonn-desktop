@@ -12,7 +12,7 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 680,
     backgroundColor: '#0A1122',
-    title: 'LAKHSONN OS',
+    title: 'LAKHSONN OS · Tenant Console',
     icon: process.platform === 'win32' ? undefined : undefined, // set at build time
     autoHideMenuBar: true,
     webPreferences: {

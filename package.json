@@ -1,8 +1,8 @@
 {
   "name": "lakhsonn-os",
   "productName": "LAKHSONN OS",
-  "version": "1.0.1",
-  "description": "LAKHSONN OS — Unified Operations System (Movezle Technologies Pvt Ltd)",
+  "version": "1.0.2",
+  "description": "LAKHSONN OS Tenant Console — Unified Operations System (Movezle Technologies Pvt Ltd)",
   "main": "main.js",
   "author": "Movezle Technologies Pvt Ltd <support@movezle.com>",
   "homepage": "https://movezle.com",
@@ -34,7 +34,7 @@
       "entitlementsInherit": "build/entitlements.mac.plist"
     },
     "dmg": {
-      "title": "Install LAKHSONN OS",
+      "title": "Install LAKHSONN OS · Tenant Console",
       "contents": [
         { "x": 140, "y": 200 },
         { "x": 400, "y": 200, "type": "link", "path": "/Applications" }
