@@ -59,6 +59,28 @@ function buildMenu() {
       { role: 'togglefullscreen' },
     ]},
     { role: 'windowMenu' },
+    // Help — the same legal, trust and support surfaces as movezle.com (Launch Master: desktop app covered by the policies)
+    { role: 'help', submenu: [
+      { label: 'Help & FAQ', click: () => shell.openExternal('https://movezle.com/faq') },
+      { label: 'Contact Support', click: () => shell.openExternal('https://movezle.com/contact') },
+      { label: 'Service Status', click: () => shell.openExternal('https://movezle.com/status') },
+      { type: 'separator' },
+      { label: 'Privacy Policy', click: () => shell.openExternal('https://movezle.com/legal/privacy') },
+      { label: 'Terms of Use & SaaS Agreement', click: () => shell.openExternal('https://movezle.com/legal/terms') },
+      { label: 'AI & Automation Terms', click: () => shell.openExternal('https://movezle.com/legal/ai-automation') },
+      { label: 'Accessibility Statement', click: () => shell.openExternal('https://movezle.com/legal/accessibility') },
+      { label: 'Legal Center', click: () => shell.openExternal('https://movezle.com/legal') },
+      { type: 'separator' },
+      { label: 'Security & Trust Center', click: () => shell.openExternal('https://movezle.com/security') },
+      { label: 'Report a Security Vulnerability', click: () => shell.openExternal('https://movezle.com/legal/responsible-disclosure') },
+      { type: 'separator' },
+      { label: 'About LAKHSONN OS', click: () => {
+        const { dialog } = require('electron');
+        dialog.showMessageBox({ type: 'info', title: 'About LAKHSONN OS',
+          message: 'LAKHSONN OS · Tenant Console ' + app.getVersion(),
+          detail: 'Movezle Technologies Pvt. Ltd.\nHoskote, Bengaluru 560049, Karnataka, India\nsupport@movezle.com · +91 9933121317\n\nThis application signs you in to lakhsonn.movezle.com and stores only your session on this device. No analytics or advertising trackers run in the app.\n\n© 2026 Movezle Technologies Pvt. Ltd. Energy Beyond Endless Movement.' });
+      } },
+    ]},
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
